@@ -3,6 +3,9 @@ from torch.autograd import Variable
 import torch.nn.functional as F
 import numpy as np
 from matplotlib import pyplot as plt
+from tqdm.notebook import tqdm
+import torchvision.utils as vutils
+from utils.net_helper import gen_fake_images
 
 # from utils.display_utils import image_gray
 
@@ -34,7 +37,7 @@ def train_loop(
     #over epochs
     if show_img:
         np.random.seed(0)
-        fixed_z = np.random.normal(0,1, (1,generator.z))
+        fixed_z = torch.randn(8, 1, 100, device=device)
 
     for epoch in range(epochs):
         print('EPOCH: ',epoch+1)
@@ -45,7 +48,7 @@ def train_loop(
         generator.train()             
         count = 0
 
-        for images in train_loader:   
+        for images, _ in tqdm(train_loader):   
             
             images = Variable(images).to(device)
             labels = Variable(torch.ones(images.shape[0])).to(device)        
@@ -116,15 +119,15 @@ def train_loop(
         
         #generate an image and display
         if show_img:
+            print('show img')
             generator.eval()
-
-            noise = torch.from_numpy(fixed_z).float().to(device)
-            result = generator(noise)
-        #     result.shape
+                         
+            fake = generator(fixed_z).detach().cpu()
             plt.figure()
-            plt.subplots(figsize=(3,3))
-            plt.imshow(result[0].squeeze().data.cpu().numpy(), cmap='gray')
+            plt.subplots(figsize=(15,15))
+            plt.imshow(np.transpose(vutils.make_grid(fake, padding=2, normalize=True), (1,2,0)))
             plt.show()
+   
         
         print('') 
 

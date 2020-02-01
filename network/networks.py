@@ -14,7 +14,7 @@ class Gan_Discriminator(nn.Module):
         self.dropout = .4
         self.discr_conv = self.make_discriminator(filters, ks, strides)
         #(128,4,4) is the expected output of conv section
-        self.dense = discr_dense(np.prod((128,4,4)))  
+        self.dense = discr_dense(np.prod((128,8,8)))  
 
     def set_dropout(self, amount):
         self.dropout = amount
@@ -25,7 +25,7 @@ class Gan_Discriminator(nn.Module):
         drop = .4
         for i in range(len(filters)):
             if i ==0:
-                layers.append(conv_layer(1, filters[i] ,ks[i], strides[i], pad, self.dropout))
+                layers.append(conv_layer(3, filters[i] ,ks[i], strides[i], pad, self.dropout))
             else:
                 layers.append(conv_layer(filters[i-1], filters[i] ,ks[i], strides[i], pad, self.dropout))
                 
@@ -90,7 +90,7 @@ class Gan_Generator(nn.Module):
             
     def forward(self, x):
         init = self.dense_init(x)
-        reshape = torch.reshape(init, (-1,64,7,7))
+        reshape = torch.reshape(init, (-1,64,16,16))
         up = self.up(reshape)
         return up
             
