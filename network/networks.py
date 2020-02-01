@@ -13,8 +13,9 @@ class Gan_Discriminator(nn.Module):
         super(Gan_Discriminator, self).__init__()
         self.dropout = .4
         self.discr_conv = self.make_discriminator(filters, ks, strides)
-        #(128,4,4) is the expected output of conv section
-        self.dense = discr_dense(np.prod((128,8,8)))  
+        #(128,8,8) is the expected output of conv section
+        #(512,8,8) for the larger network
+        self.dense = discr_dense(np.prod((512,8,8)))  
 
     def set_dropout(self, amount):
         self.dropout = amount
